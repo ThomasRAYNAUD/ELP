@@ -1,0 +1,59 @@
+package main
+
+import (
+    "fmt"
+    "net"
+    "sync"
+    "time"
+)
+
+func testPort(protocol, site string, wg *sync.WaitGroup, openPorts, filteredPorts *int) {
+    defer wg.Done()
+
+    conn, err := net.DialTimeout(protocol, site, 2*time.Second)
+    if err == nil {
+        fmt.Println(site, "Port ouvert en", protocol)
+        conn.Close()
+        (*openPorts)++
+    } else {
+        // Ajout de l'analyse des réponses ICMP
+        if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+            fmt.Println(site, "Timeout en", protocol)
+        } else if netErr, ok := err.(*net.OpError); ok && netErr.Err.Error() == "connection refused" {
+            fmt.Println(site, "Port fermé en", protocol)
+        } else if netErr, ok := err.(*net.OpError); ok && netErr.Err.Error() == "network is unreachable" {
+            fmt.Println(site, "Réseau inaccessible en", protocol)
+        } else {
+            fmt.Println(site, "Autre erreur en", protocol, ":", err)
+            (*filteredPorts)++
+        }
+    }
+}
+
+func main() {
+    var wg sync.WaitGroup
+    portsTCP := 0
+    portsUDP := 0
+    filteredPortsTCP := 0
+    filteredPortsUDP := 0
+
+    for i := 0; i < 1024; i++ {
+        site := fmt.Sprintf("scanme.nmap.org:%d", i)
+
+        // Test TCP
+        wg.Add(1)
+        go testPort("tcp", site, &wg, &portsTCP, &filteredPortsTCP)
+
+        // Test UDP
+        wg.Add(1)
+        go testPort("udp", site, &wg, &portsUDP, &filteredPortsUDP)
+    }
+
+    wg.Wait()
+
+    fmt.Println("Scan fini")
+    fmt.Println(portsTCP, "ports TCP  ouverts.")
+    fmt.Println(portsUDP, "ports UDP  ouverts.")
+    fmt.Println(filteredPortsTCP, "ports TCP  filtrés.")
+    fmt.Println(filteredPortsUDP, "ports UDP  filtrés.")
+}
