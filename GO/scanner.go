@@ -66,7 +66,6 @@ func estChiffre(chaine string) (int,bool) {
 
 func worker(jobs <-chan travail, results chan<- result, address string) {
 	defer wg.Done() // Décrémentation du WaitGroup à la fin de l'exécution de la goroutine.
-
 	// Boucle infinie pour recevoir des plages de ports à scanner depuis le canal jobs.
 	for work := range jobs {
 		// Initialisation du compteur de ports TCP ouverts.
@@ -74,11 +73,9 @@ func worker(jobs <-chan travail, results chan<- result, address string) {
 		// Boucle pour scanner les ports dans la plage donnée.
 		for port := work.BegPort; port <= work.EndPort; port++ {
 			// Construction de l'adresse du site à scanner en utilisant l'adresse IP locale "127.0.0.1" et le port.
-			site := fmt.Sprintf(address,":", port)
-
+			site := fmt.Sprintf(address+":%d",port)
 			// Tentative de connexion TCP avec un délai de timeout de 1 seconde.
 			connTCP, errTCP := net.DialTimeout("tcp", site, 1*time.Second)
-
 			// Vérification s'il n'y a pas d'erreur lors de la connexion, indiquant que le port est ouvert.
 			if errTCP == nil {
 				// Fermeture de la connexion TCP après confirmation du port ouvert.
@@ -90,14 +87,13 @@ func worker(jobs <-chan travail, results chan<- result, address string) {
 				results <- result{true, port, "TCP"}
 			} else {
 				results <- result{false, port, "TCP"}
+				fmt.Printf("port %d fermé\n", port)
 			} // Envoi des résultats au canal results.
 		}
 	}
 }
 
-
 var wg sync.WaitGroup
-
 func main() {
 
 	//initialisation des varibales
@@ -113,7 +109,7 @@ func main() {
 	var EndPort int
 	var verif1 bool
 	var verif2 bool
-	var workerVerif int
+	var numWorkers int
 	var verif3 bool = false
 	var nbrPort int
 	var verif4 bool
@@ -155,8 +151,8 @@ func main() {
 			arg_w=true
 			_=arg_w
 		} else if arg_w {
-			workerVerif,verif3 = estChiffre(arg)
-			_=workerVerif
+			numWorkers,verif3 = estChiffre(arg)
+			_=numWorkers
 			if verif3==false {
 				fmt.Println("Le nombre de worker n'est pas compatible (entier uniquement)")
 				os.Exit(0)
@@ -192,7 +188,7 @@ func main() {
 		view1=false
 	}
 	if view2 { // si pas choisi de worker
-		workerVerif=2
+		numWorkers=2
 		view2=false
 		// mettre une valeur par défault de worker
 	} 
@@ -225,9 +221,8 @@ func main() {
 	nbrPlage := int(math.Ceil(float64(work.EndPort-work.BegPort+1) / float64(nbrPort))) // Calcul du nombre de plages
 	numJobs := nbrPlage
 	jobs := make(chan travail, numJobs)      //jobs est un channel de type travail
-	results := make(chan result, 10*numJobs) //pareil pour results
-	//address existe aussi déjà
-	for w := 1; w <= numJobs; w++ {          //nombre de workers qui effectue le scan (VALEUR MAX A FAIRE VARIER POUR TROUVER LE PLUS OPTI)
+	results := make(chan result, numWorkers) //pareil pour results
+	for w := 1; w <= numWorkers; w++ {       //nombre de workers qui effectue le scan (VALEUR MAX A FAIRE VARIER POUR TROUVER LE PLUS OPTI)
 		wg.Add(1)
 		go worker(jobs, results,address) //ouverture de goroutine
 	}
@@ -239,20 +234,27 @@ func main() {
 		}
 		jobs <- travail{BegPort: startPort, EndPort: endPort} //on envoie dans le channel jobs les structures travaillent à faire par les workers
 	}
-	close(jobs)    //fermeture du canal
-	wg.Wait()      //on attend que les goroutines finissent
-	close(results) //fermeture du canal
-	b := time.Now()
-	temps := b.Sub(a) // fin chrono
-	fmt.Printf("-------------------------\n")
-	fmt.Printf("temps écoulé : %s\n", temps)
-	fmt.Printf("-------------------------\n")
+	close(jobs) //fermeture du canal
+	go func() {
+		wg.Wait()      //on attend que les goroutines finissent
+		close(results) //fermeture du canal
+		b := time.Now()
+		temps := b.Sub(a) // fin chrono
+		fmt.Printf("-------------------------\n")
+		fmt.Printf("temps écoulé : %s\n", temps)
+		fmt.Printf("-------------------------\n")
+
+	}()
 
 	// affichage du channel résultat
-	for result := range results {
-		state := result.State
-		port := result.NumberPort
-		protocol := result.Protocol
+	output := make([]result, 0)
+	for r := range results {
+		output = append(output, r)
+	}
+	for _, r := range output { //on met pas d'itérateur car variable de l'itérateur sera inutilisé
+		state := r.State
+		port := r.NumberPort
+		protocol := r.Protocol
 		if state {
 			fmt.Printf("Le port %d est %t, protocole: %s\n", port, state, protocol)
 		}
