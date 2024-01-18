@@ -7,11 +7,11 @@
  
  <p align="center">
 <a href="#features">Features</a> â€¢
-<a href="#installation-instructions">Installation</a> â€¢
-<a href="#usage">Usage</a> â€¢
-<a href="#running-naabu">Running naabu</a> â€¢
-<a href="#configuration-file">Config</a> â€¢
-<a href="#nmap-integration">NMAP integration</a> â€¢
-<a href="#cdn-waf-exclusion">CDN/WAF Exclusion</a> â€¢
+<a href="#installation-instructions">Installation</a> 
+<a href="#usage">Usage</a> 
+<a href="#running-naabu">Running naabu</a> 
+<a href="#configuration-file">Config</a> 
+<a href="#nmap-integration">NMAP integration</a> 
+<a href="#cdn-waf-exclusion">CDN/WAF Exclusion</a> 
 <a href="https://discord.gg/projectdiscovery">Discord</a>
 </p>
