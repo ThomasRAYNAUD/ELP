@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="InsightNet Scanner.jpeg" alt="InsightNet Scanner" width="200px">
+<img src="img/InsightNet Scanner.jpeg" alt="InsightNet Scanner" width="200px">
 <br>
 </h1>
  
@@ -14,7 +14,7 @@
 # Features
 
  <h1 align="center">
-<img src="term.png" alt="Linux Terminal" width="700px">
+<img src="img/term.png" alt="Linux Terminal" width="700px">
 <br>
 </h1>
 
@@ -22,3 +22,10 @@
 - Choix du nombre de **workers**
 - Choix de la **plage de ports** ou du **port**
 - Choix du nombre de **port par plage**
+
+# Installation
+
+ ``` git clone https://github.com/ThomasRAYNAUD/ELP.git ```
+
+L'exécutable .go est dans ./GO/scan.go
+
