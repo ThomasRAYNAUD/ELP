@@ -5,6 +5,7 @@
 - Choix du nombre de **workers**
 - Choix de la **plage de ports** ou du **port**
 - Choix du nombre de **port par plage**
+- Un environnement de test est aussi disponible : serveur web (web_server.go et index.html) et ouvrir des port TCP (open.go)
 
 
 ## Installation
@@ -21,15 +22,20 @@ git clone https://github.com/ThomasRAYNAUD/ELP.git
 Usage:
 go run ./scan.go [cible] [flags]
 
+cible :
+# choix de la machine à scanner
+<IPv4 adresse> ou <nom de domaine>
+
 flags :
-# choix de la plage de port
--w
+# choix de la plage de port ou un seul port
+-p [port de début(int):(int)port de fin] ou -p [port à scanner (int)]
 
-# returns 'geese'
-foobar.pluralize('goose')
+# choix du nombre de worker
+-w [nbr de workers (int) ]
 
-# returns 'phenomenon'
-foobar.singularize('phenomena')
+# choix du nombre de ports par plage
+-n [nbr de ports (int) ]
+
 ```
 
 ## Contributing
