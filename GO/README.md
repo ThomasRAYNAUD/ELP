@@ -103,5 +103,4 @@ to be enabled)
 -stats display stats of the running scan (deprecated)
 -si, -stats-interval int number of seconds to wait between showing a statistics update
 (deprecated) (default 5)
--mp, -metrics-port int port to expose nuclei metrics on (default 63636)
-```
+-mp, -metrics-port int port to expose nuclei metrics on (default 63636)```
