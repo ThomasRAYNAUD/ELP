@@ -5,7 +5,7 @@
  
  <p align="center">
 <a href="#features">Features</a> --
-<a href="#installation-instructions">Installation</a> --
+<a href="#Installation">Installation</a> --
 <a href="#usage">Usage</a>
 </p>
 
