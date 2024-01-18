@@ -10,7 +10,7 @@
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Utiliser le package [git]([https://pip.pypa.io/en/stable/](https://git-scm.com/book/fr/v2/D%C3%A9marrage-rapide-Installation-de-Git)) pour installer le scanner.
 
 ```bash
 git clone https://github.com/ThomasRAYNAUD/ELP.git 
