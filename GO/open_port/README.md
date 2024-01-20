@@ -1,9 +1,9 @@
  <h2>Ce dossier continent un environnement de test permettant l'ouverture de ports</h2>
 ## Features
 
-- open.go > script permettant d'ouvrir un port TCP spécifié
-- web_server.go > script permettant de créer un serveur web en se basant sur la template index.html
-- permet tester le bon fonctionnement de notre scanner
+- **open.go** > script permettant d'ouvrir un port TCP spécifié
+- **web_server.go** > script permettant de créer un serveur web en se basant sur la template index.html
+- permet tester le ***bon fonctionnement*** de notre scanner
 
 ## Usage
 
