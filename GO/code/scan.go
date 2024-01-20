@@ -124,8 +124,8 @@ func worker(jobs <-chan travail, results chan<- result, address string) {
 				results <- result{true, port, "TCP"}
 			} /*else {
 				results <- result{false, port, "TCP"} // ---> cette partie nous permet de renvoyer les ports fermés, qui nous intéressent pas
-			} 
-			*/ 
+			}
+			*/
 		}
 	}
 }
@@ -159,7 +159,7 @@ func main() {
 		} else if arg_p {
 			BegPort, EndPort, verif1 = estNombreNombre(arg)
 			BegPortbis, verif2 = estChiffre(arg)
-			if verif1 ==false&& verif2==false{
+			if verif1 == false && verif2 == false {
 				fmt.Println("Aucun argument valable de port")
 				os.Exit(0)
 			}
@@ -236,7 +236,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	a := time.Now() //début du chrono
+	debut := time.Now() //début du chrono
 	var work travail
 	work.BegPort = BegPort
 	work.EndPort = EndPort
@@ -254,11 +254,7 @@ func main() {
 	}
 	fmt.Println("nombre de workers : ", numWorkers)
 	fmt.Println("nombre de port par plage =", nbrPort)
-	//go loadingAnimation() // --> annimation mais ajoute une go routine donc dans une problématique de temps à éviter d'ajouter
-	for w := 1; w <= numWorkers; w++ { //nombre de workers qui effectue le scan (meilleur optimisation = 2* nombres coeurs)
-		wg.Add(1)
-		go worker(jobs, results, address) //ouverture de goroutine
-	}
+
 	for i := 0; i < numJobs; i++ { // on divise en petite plage pour transmettre aux workers -> création des jobs pendant que les workers travaillent dessus
 		startPort := work.BegPort + i*(nbrPort) //permet de commencer à 31 si la première plage c'est fini à 30 (le +1)
 		endPort := startPort + nbrPort - 1
@@ -267,20 +263,30 @@ func main() {
 		}
 		jobs <- travail{BegPort: startPort, EndPort: endPort} //on envoie dans le channel jobs les structures de travail à faire par les workers
 	}
+
+	//go loadingAnimation() // --> annimation mais ajoute une go routine donc dans une problématique de temps à éviter d'ajouter
+
+	for w := 1; w <= numWorkers; w++ { //nombre de workers qui effectue le scan (meilleur optimisation = 2* nombres coeurs)
+		wg.Add(1)
+		go worker(jobs, results, address) //ouverture de goroutine
+	}
+	output := make([]result, 0) // creer tab output pour le quicksort
+	go func() {
+		for r := range results { // conitnue d'extraire les données du channel tant qu'il n'est pas fermé
+			output = append(output, r)
+		}
+	}()
+
 	close(jobs)    //fermeture du canal quand tous les jobs ont été créés
 	wg.Wait()      //on attend que les goroutines finissent
-	close(results) //fermeture du canal quand les goroutines ont fini de travailler car elles ajoutent plus rien dedans 
-	b := time.Now()
-	temps := b.Sub(a)
+	close(results) //fermeture du canal quand les goroutines ont fini de travailler car elles ajoutent plus rien dedans
+	fin := time.Now()
+	temps := fin.Sub(debut)
 	fmt.Printf("-------------------------\n")
 	fmt.Printf("temps écoulé : %s\n", temps)
 	fmt.Printf("-------------------------\n")
 	fmt.Printf("Scan fini : tri en cours...\n")
 	// affichage du channel result
-	output := make([]result, 0) // creer tab output pour le quicksort
-	for r := range results {
-		output = append(output, r)
-	}
 
 	tableau_trie := quickSort(output)
 	for _, r := range tableau_trie { //on met pas d'itérateur car variable de l'itérateur sera inutilisé
