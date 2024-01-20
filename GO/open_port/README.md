@@ -14,6 +14,7 @@ go run ./open.go
 
 Usage web_server.go :
 go run ./web_server.go
---> permet d'ouvrir un serveur web sur un port spécifié dans le code, en utilisant comme template "index.html". Le port par défaut est :9999
+--> permet d'ouvrir un serveur web sur un port spécifié dans le code, en utilisant
+comme template "index.html". Le port par défaut est :9999
 
 ```
