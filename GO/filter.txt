@@ -1,0 +1,56 @@
+
+Firewall Linux (à mettre en place en script et lancer script au lancement d'un PC) :
+
+- Vérifier état iptables :
+sudo iptables -L
+
+- Configurer la règle pour le port 9000 :
+sudo iptables -A INPUT -p tcp --dport 9000 -j DROP
+---
+sudo iptables -A INPUT -p tcp --dport 9000:9100 -j DROP
+
+- Sauvegarder les règles iptables :
+sudo service iptables save
+
+- Redémarrer le service iptables :
+sudo service iptables restart
+
+- Assurez-vous que le service iptables est démarré au démarrage du système :
+sudo systemctl enable iptables
+
+
+    -A --append : Ajoute une règle à une chaîne (à la fin).
+    -C --check : Recherche une règle qui correspond aux exigences de la chaîne.
+    -D --delete : Supprime les règles spécifiées d'une chaîne.
+    -F --flush : Supprime toutes les règles.
+    -I --insert : Ajoute une règle à une chaîne à une position donnée.
+    -L --list : Affiche toutes les règles d'une chaîne.
+    -N -new-chain : Crée une nouvelle chaîne.
+    -v --verbose : Affiche plus d'informations lors de l'utilisation d'une option de liste.
+    -X --delete-chain : Supprime la chaîne fournie.
+	-p : Vérifie le protocole spécifié (tcp).
+    --dport : Spécifie le port de destination.
+    -j jump : Effectue l'action
+	-m : Correspond à l'option spécifiée.
+    -iprange : Indique au système d'attendre une plage d'adresses IP au lieu d'une seule.
+    --src-range : Identifie la plage d'adresses IP.
+
+
+
+- Désormais, tout ce qui provient de votre système passera par votre pare-feu :
+sudo iptables -A INPUT -i lo -j ACCEPT
+
+- Pour autoriser le trafic Web HTTP, saisissez la commande suivante :
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+- Accepter le trafic à partir d'une adresse IP spécifique.
+sudo iptables -A INPUT -s votre_adresse_IP_à_autoriser -j ACCEPT
+
+- Bloquer le trafic à partir d'une adresse IP
+sudo iptables -A INPUT -s votre_adresse_IP_à_bloquer -j DROP
+
+- rejeter le trafic à partir d'une plage d'adresses IP, avec la commande suivante :
+sudo iptables -A INPUT -m iprange --src-range votre_adresse_IP_debut-votre_adresse_IP_fin -j REJECT
+
+- sauvegarder modif
+sudo -s iptables-save -c
