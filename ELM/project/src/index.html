@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Timer Slider</title>
+  <!-- Link CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- Timer Section with Slider Input -->
+  <div id="timer-section">
+    <label for="timer">Choose timer duration (seconds):</label>
+    <input type="range" id="timer" min="10" max="60" step="1" value="30">
+    <span id="timer-value">30</span> seconds
+  </div>
+
+  <!-- Inline JavaScript to control the timer functionality -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Variable declarations for DOM elements and timer functionality
+      var timerSlider = document.getElementById("timer");
+      var timerValueDisplay = document.getElementById("timer-value");
+      var countdownInterval;
+      var elmContainer = document.getElementById("elm-container");
+      var elmScript;
+
+      // Function to start the timer and load Elm code
+      function startTimer() {
+        var duration = timerSlider.value;
+        console.log("Timer started for " + duration + " seconds.");
+
+        // Load and run Elm code
+        loadAndRunElmCode();
+
+        // Clear any existing countdown interval
+        clearInterval(countdownInterval);
+
+        // Disable the timer slider during countdown
+        timerSlider.disabled = true;
+
+        // Set up the countdown interval
+        countdownInterval = setInterval(function () {
+          duration--;
+          timerValueDisplay.textContent = duration;
+
+          // Stop the timer when the countdown reaches zero
+          if (duration <= 0) {
+            clearInterval(countdownInterval);
+            console.log("Timer finished!");
+
+            // Freeze the page and unload Elm code
+            freezePage();
+          }
+        }, 1000);
+      }
+
+      // Function to load and run Elm code dynamically -> when I set the timer
+      function loadAndRunElmCode() {
+        elmScript = document.createElement('script');
+        //using elm code
+        elmScript.src = 'elm.js';
+        document.head.appendChild(elmScript);
+
+        elmScript.onload = function () {
+          Elm.Main.init({
+            node: elmContainer,
+          });
+        };
+      }
+
+      // Function to freeze the page by disabling pointer events
+      function freezePage() {
+        document.body.style.pointerEvents = "none";
+      }
+
+      // Set initial value for timer display
+      timerValueDisplay.textContent = timerSlider.value;
+
+      // Event listener for slider input to update displayed timer value
+      timerSlider.addEventListener("input", function () {
+        var timerValue = timerSlider.value;
+        timerValueDisplay.textContent = timerValue;
+      });
+
+      // Event listener for mouseup event on the slider to start the timer
+      timerSlider.addEventListener("mouseup", startTimer);
+    });
+  </script>
+
+  <!-- Container for Elm application -->
+  <div id="elm-container"></div>
+</body>
+</html>
