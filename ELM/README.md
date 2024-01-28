@@ -15,7 +15,7 @@ Les définitions sont tirées depuis une API et le but est de trouver le maximum
 
 2. Pour tester le code, il suffit de lancer un elm reactor :
 
-Afin de tester le code dans l'environnement voulu, le code html contient une référence au code JS retourné par la compilation. Une fois le code compilé en JS, il suffit simplement de :
+Afin de tester le code dans l'environnement voulu, le code html contient une référence au code JS retourné par la compilation (il lance tout seul elm.js après le lancement du timer). Une fois le code compilé en JS, il suffit simplement de :
 
    ```bash
    elm reactor
