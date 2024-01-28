@@ -10,7 +10,7 @@ Les définitions sont tirées depuis une API et le but est de trouver le maximum
    ```bash
    git clone https://github.com/ThomasRAYNAUD/ELP.git
    cd ELP/ELM/project/src
-   elm make Main.elm --output=main.js        -> compiler le code ELM en JavaScript
+   elm make Main.elm --output=elm.js        # compiler le code ELM en JavaScript. Attention à bien output en elm.js
    ```
 
 2. Pour tester le code, il suffit de lancer un elm reactor :
