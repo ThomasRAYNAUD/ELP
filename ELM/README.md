@@ -9,15 +9,20 @@ Les définitions sont tirées depuis une API et le but est de trouver le maximum
 
    ```bash
    git clone https://github.com/ThomasRAYNAUD/ELP.git
+   cd ELP/ELM/project/src
+   elm make Main.elm --output=main.js        -> compiler le code ELM en JavaScript
+   ```
 
 2. Pour tester le code, il suffit de lancer un elm reactor :
+
+Afin de tester le code dans l'environnement voulu, le code html contient une référence au code JS retourné par la compilation. Une fois le code compilé en JS, il suffit simplement de :
 
    ```bash
    elm reactor
    # puis aller dans le localhost qui nous est retourné
+   ```
 
-3. Une fois le localhost ouvert :
+3. Une fois le localhost ouvert dans un navigateur :
 - entrer dans le dossier /src.
-- choisir le fichier index.html.
-- le fichier index.html contient le code elm sous forme de javascript que nous appelons dans un code javascript que nous avons écrit afin d'inclure la fonctionnalité du choix de timer.
-- on importe aussi un fichier styles.css permettant de changer la forme des input en utilisant les class.
+- choisir le fichier index.html qui contient le code html, CSS et Javascript (obtenu par la compilation ELM).
+- on importe aussi un fichier styles.css permettant de changer la forme des input en utilisant les class
