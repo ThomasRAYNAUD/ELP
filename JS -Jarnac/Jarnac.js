@@ -19,6 +19,7 @@ function clearTerminal() {
 }
 
 function afficherGrille(joueur,lettrej1, lettrej2) {
+  // Inverser les lettres si le joueur est le joueur 2
   if (joueur === 2) {
     let temp = lettrej1;
     lettrej1 = lettrej2;
@@ -104,6 +105,7 @@ function afficherGrille(joueur,lettrej1, lettrej2) {
 }
 
 function estMotValide(mot, lettresTirees) {
+  // Vérifier si le mot est valide (chaque lettre est dans les lettres tirées)
   for (const lettre of mot) {
     if (!lettresTirees.includes(lettre)) {
       return false;
@@ -113,6 +115,7 @@ function estMotValide(mot, lettresTirees) {
 }
 
 function enregistrerCoup(joueur, mot) {
+  // Enregistrer le coup dans le fichier coups.txt (sauf si le mot est 'passe')
   if (mot.toLowerCase() !== 'passe') {
     const coup = `Joueur ${joueur} a joué : ${mot}\n`;
     fs.appendFileSync(path, coup, 'utf8');
@@ -120,6 +123,7 @@ function enregistrerCoup(joueur, mot) {
 }
 
 function selectionnerLigneJoueur(joueur, numLigne) {
+  // Sélectionner la ligne correspondant au joueur et au numéro de ligne spécifié
   const data = fs.readFileSync('./coups.txt', 'utf8');
   const lignes = data.split('\n');
   let compteur = 0;
@@ -137,18 +141,18 @@ function selectionnerLigneJoueur(joueur, numLigne) {
 }
 
 async function proposerOptions(joueur, lettresTirees, lettresAdversaire,mot) {
+  // Proposer des options au joueur (modifier un mot, jouer un coup, passer)
   clearTerminal();
   afficherGrille(joueur,lettresTirees, lettresAdversaire);
-
   return new Promise(resolve => {
     rl.question(`Joueur ${joueur}, que voulez-vous faire ?\n1. Modifier un mot\n2. Jouer un coup\n3. Passer\n4. Jarnac\n`, async (choix) => {
-      if (choix === '2') {
+      if (choix === '2') { // Jouer un coup
         console.log(`Voici votre main : ${lettresTirees}`);
         const result = await jouerCoup(joueur, lettresTirees, rl,lettresAdversaire);
         resolve(result);
-      } else if (choix === '3') {
+      } else if (choix === '3') { // Passer
         resolve({ mot: 'Passe', lettresTirees, lettresAdversaire });
-      } else if (choix === '1') {
+      } else if (choix === '1') { // Modifier un mot
         rl.question('Entrez le numéro de ligne à modifier : ', async (numLigne) => {
           const ligne = selectionnerLigneJoueur(joueur, parseInt(numLigne));
           let mot = ligne.split(' : ')[1];
@@ -209,6 +213,7 @@ async function proposerOptions(joueur, lettresTirees, lettresAdversaire,mot) {
   });
 
   async function ajouterLettresDuDeck(joueur, lettresTirees, mot) {
+    // Ajouter des lettres du deck au mot actuel du joueur
     return new Promise(resolve => {
       rl.question('Entrez les lettres à ajouter à votre mot (issues de votre deck) : ', (lettresAjoutees) => {
         if (lettresAjoutees.length > 0 && estMotValide(lettresAjoutees, lettresTirees)) {
@@ -223,7 +228,7 @@ async function proposerOptions(joueur, lettresTirees, lettresAdversaire,mot) {
               return;
             }
           }
-          let mot_nouveau = mot+lettresAjoutees;
+          let mot_nouveau = mot+lettresAjoutees; // On ajoute les lettres au mot actuel
           supprimerLigne(joueur, path, mot_nouveau,mot);
           console.log(`Votre nouveau mot : ${mot_nouveau}`);
           lettresTirees += tirerLettre();
@@ -245,7 +250,7 @@ async function proposerOptions(joueur, lettresTirees, lettresAdversaire,mot) {
           for (const lettre of lettresAjoutees) {
             const index = lettresTirees.indexOf(lettre);
             if (index !== -1) {
-              lettresTirees = lettresTirees.slice(0, index) + lettresTirees.slice(index + 1);
+              lettresTirees = lettresTirees.slice(0, index) + lettresTirees.slice(index + 1); // On retire les lettres ajoutées du deck
             } else {
               console.log(`Lettre '${lettre}' non disponible dans votre deck. Le joueur continuera avec le mot actuel.`);
               const result = proposerOptions(joueur, lettresTirees, lettresAdversaire,mot);
@@ -269,7 +274,8 @@ async function proposerOptions(joueur, lettresTirees, lettresAdversaire,mot) {
   }
 
 
-  async function ajouterLettresDuDeck2(joueur, lettresAdversaire, mot,ancien_mot) { // Ajouter des lettres du deck au mot actuel
+  async function ajouterLettresDuDeck2(joueur, lettresAdversaire, mot,ancien_mot) {
+    // Ajouter des lettres du deck adverse au mot actuel du joueur
     return new Promise(resolve => {
       rl.question('Entrez les lettres à ajouter à votre mot (issues du deck adverse) : ', (lettresAjoutees) => {
         if (lettresAjoutees.length > 0 && estMotValide(lettresAjoutees, lettresAdversaire)) {
@@ -302,6 +308,7 @@ async function proposerOptions(joueur, lettresTirees, lettresAdversaire,mot) {
 
 
 function supprimerLigne(joueur, filePath, mot, ancien_mot) {
+  // Supprimer une ligne du fichier coups.txt (pour la remplacer par une nouvelle ligne)
   const contenu = fs.readFileSync(filePath, 'utf8').split('\n');
   let nouveauContenu = '';
 
@@ -322,6 +329,7 @@ function supprimerLigne(joueur, filePath, mot, ancien_mot) {
 
 
 async function jouerCoup(joueur, lettresTirees, rl,lettresAdversaire) {
+  // Jouer un coup (saisir un mot)
   return new Promise(resolve => {
     rl.question(`Joueur ${joueur}, tirez vos lettres : ${lettresTirees}\nVotre mot (3 lettres minimum) : `, async (mot) => {
       if (mot.length >= 3 && estMotValide(mot, lettresTirees)) {
@@ -345,6 +353,7 @@ async function jouerCoup(joueur, lettresTirees, rl,lettresAdversaire) {
 }
 
 async function jouer() {
+  // Supprimer le fichier coups.txt s'il existe déjà
   if (fs.existsSync(path)) {
     fs.unlinkSync(path);
   }
@@ -364,12 +373,12 @@ async function jouer() {
   let lettresJoueur2 = tirerLettres();
 
 
-let compteurJoueur1 = 0;
-let compteurJoueur2 = 0;
+  let compteurJoueur1 = 0;
+  let compteurJoueur2 = 0;
 
 
   let tour = 1;
-  while (compteurJoueur1 < 9 && compteurJoueur2 < 9) {
+  while (compteurJoueur1 < 9 && compteurJoueur2 < 9) { // Tant que les deux joueurs n'ont pas joué 9 mots
 
     clearTerminal();
     if (tour !== 1) {
@@ -411,10 +420,10 @@ let compteurJoueur2 = 0;
     }
   }
   tour++;
-  }
+  } // Fin de la boucle while
   let pts1=compterPoints(1);
   let pts2=compterPoints(2);
-  if (pts1>pts2) {
+  if (pts1>pts2) { // Afficher le gagnant de la partie
     console.log(`Le joueur 1 a gagné avec ${pts1} points contre ${pts2} points pour le joueur 2.`);
   }
   else if (pts1<pts2) {
@@ -465,5 +474,5 @@ function compterPoints(joueur) {
   return points;
 }
 
-
+// Exécuter le jeu
 jouer();
